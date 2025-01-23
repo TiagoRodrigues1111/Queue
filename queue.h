@@ -80,7 +80,7 @@ extern "C" {
 *
 *
 *****************************************************************/
-void create_queue();
+void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elements_to_allocate);
 
 
 
@@ -101,7 +101,7 @@ void create_queue();
 *
 *
 *****************************************************************/
-void* check_queue_front();
+void* check_queue_front(void* id_of_queue);
 
 
 
@@ -123,7 +123,7 @@ void* check_queue_front();
 *
 *
 *****************************************************************/
-void* check_queue_back();
+void* check_queue_back(void* id_of_queue);
 
 
 /******************************************************************
@@ -143,7 +143,7 @@ void* check_queue_back();
 *
 *
 *****************************************************************/
-void queue_pop();
+void queue_pop(void* id_of_queue);
 
 
 /******************************************************************
@@ -163,7 +163,7 @@ void queue_pop();
 *
 *
 *****************************************************************/
-void queue_push(void* data_to_push);
+void queue_push(void* id_of_queue, void* data_to_push);
 
 
 /******************************************************************
@@ -183,28 +183,7 @@ void queue_push(void* data_to_push);
 *
 *
 *****************************************************************/
-uint8_t check_queue_is_empty();
-
-
-
-/******************************************************************
-*
-* FUNCTION NAME:        
-*
-*
-*
-* ARGUMENTS:
-*
-* ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-------------	---	--------------------------
-* 
-*
-* RETURNS:
-*
-*
-*
-*****************************************************************/
-uint64_t check_queue_size();
+uint8_t check_queue_is_empty(void* id_of_queue);
 
 
 
@@ -225,7 +204,28 @@ uint64_t check_queue_size();
 *
 *
 *****************************************************************/
-void free_queue();
+uint64_t check_queue_size(void* id_of_queue);
+
+
+
+/******************************************************************
+*
+* FUNCTION NAME:        
+*
+*
+*
+* ARGUMENTS:
+*
+* ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------	-------------	---	--------------------------
+* 
+*
+* RETURNS:
+*
+*
+*
+*****************************************************************/
+void free_queue(void* id_of_queue);
 
 
 
