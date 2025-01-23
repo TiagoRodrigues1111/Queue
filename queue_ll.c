@@ -1,5 +1,5 @@
 /*******************************************************************************************************************
-* FILE NAME: queue.c
+* FILE NAME: queue_ll.c
 *                                                                                                               
 * PURPOSE: 
 *                                                                                                               
@@ -42,9 +42,8 @@
 *                                                                                                               
 * Date          Author                  Change Id       Release         Description Of Change                   
 * ----------    ---------------         ---------       -------         ---------------------   
-* 14-01-2025    Tiago Rodrigues                               1         File preparation   
-* 23-01-2025    Tiago Rodrigues                               1         Initial queue implementation     
-* 
+* 14-01-2025    Tiago Rodrigues                               1         File preparation     
+* 23-01-2025    Tiago Rodrigues                               1         Implementation of queue using a linked list     
 *                                                                                                               
 * ALGORITHM (PDL)
 *    
@@ -75,7 +74,6 @@
 
 /* 2 defines */
 /*****************************************************/
-#define INITIAL_ALLOC 3
 
 /*****************************************************/
 
@@ -96,16 +94,21 @@
 /* 5 global variable declarations */
 /*****************************************************/
 
-// Possible solutions:  queue_front and queue_size (increment to find the back )
-//                      queue_front and queue_back (initiate queue_back as always +1 than it should )
+struct data
+{
+        void *data_element;
+        struct data *next;
+};
+
+
 struct queue
 {
-        uint64_t queue_front;
-        uint64_t queue_back;
-        uint64_t queue_size;
-        uint64_t queue_size_allocated;                  // num_of_elements
-        uint64_t datatype_size;                         // num_of_bytes
-        void *queue_data;
+        uint64_t datatype_size;                         
+        uint64_t queue_size;                                    // needed for the check_size(otherwise O(k))
+        struct data *queue_front;
+        struct data *queue_back; 
+
+        // struct data *queue_data;
 };
 
 
@@ -160,22 +163,11 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
                 fprintf(stderr, "Memory allocation failed\n");
         }
 
-        if(0 == elements_to_allocate)
-                ((struct queue*)(*id_of_queue))->queue_size_allocated = INITIAL_ALLOC;      // assumed that the number of elements to allocate initially is INITIAL_ALLOC (3 by default)
-        else
-                ((struct queue*)(*id_of_queue))->queue_size_allocated = elements_to_allocate;
-
-        ((struct queue*)(*id_of_queue))->queue_front = 0;
-        ((struct queue*)(*id_of_queue))->queue_back = 0;
+        ((struct queue*)(*id_of_queue))->queue_front = NULL;
+        ((struct queue*)(*id_of_queue))->queue_back = NULL;
         ((struct queue*)(*id_of_queue))->queue_size = 0;
         ((struct queue*)(*id_of_queue))->datatype_size = size_of_datatype;
         
-        // Allocate space in the queue for the array of values
-        ((struct queue*)(*id_of_queue))->queue_data = (void*) malloc(((struct queue*)(*id_of_queue))->queue_size_allocated*((struct queue*)(*id_of_queue))->datatype_size);     
-        if(NULL == ((struct queue*)(*id_of_queue))->queue_data)
-        {
-                fprintf(stderr, "Memory allocation failed\n");
-        }
         
         return ;        
 }
@@ -214,12 +206,12 @@ void* check_queue_front(void* id_of_queue)
         }
                
 
-        if(check_queue_is_empty(id_of_queue))                       
-                return NULL;
+        // if(check_queue_is_empty(id_of_queue))                       
+        //        return NULL;
 
-        return (void *) &((uint8_t*)(((struct queue*)id_of_queue)->queue_data))[(((struct queue*)id_of_queue)->queue_front)*((struct queue*)id_of_queue)->datatype_size];       
-
-
+        if(NULL != ((struct queue*)id_of_queue)->queue_front)
+                return ((struct queue*)id_of_queue)->queue_front->data_element;
+  
 
 }
 
@@ -254,10 +246,8 @@ void* check_queue_back(void* id_of_queue)
         }
                
 
-        if(check_queue_is_empty(id_of_queue))                       
-                return NULL;
-
-        return (void *) &((uint8_t*)(((struct queue*)id_of_queue)->queue_data))[(((struct queue*)id_of_queue)->queue_back)*((struct queue*)id_of_queue)->datatype_size];  
+        if(NULL != ((struct queue*)id_of_queue)->queue_back)
+                return ((struct queue*)id_of_queue)->queue_back->data_element;
 
 
 
@@ -299,8 +289,20 @@ void queue_pop(void* id_of_queue)
         }   
         if(!check_queue_is_empty(id_of_queue))
         {
+                
+
+                struct data *aux_ptr = ((struct queue*)id_of_queue)->queue_front;
+
+                ((struct queue*)id_of_queue)->queue_front = ((struct queue*)id_of_queue)->queue_front->next;
+
+                free(aux_ptr->data_element);
+                free(aux_ptr);
+
                 ((struct queue*)id_of_queue)->queue_size--;
-                ((struct queue*)id_of_queue)->queue_front++;                            // TODO: if front is at end of array, front is decremented instead
+
+                if(0 == ((struct queue*)id_of_queue)->queue_size)
+                        ((struct queue*)id_of_queue)->queue_back = NULL;                        // TODO: check if there are other places where this might be a problem
+
         }
         return;
 
@@ -337,25 +339,37 @@ void queue_push(void* id_of_queue, void* data_to_push)
                 fprintf(stderr, "Queue pointer location is null\n");
                 return ;
         }
+
         
-        if(!check_queue_is_empty(id_of_queue))                                  //caution (left == right will not work, because they are the same for 1 element)
-                 ((struct queue*)id_of_queue)->queue_back++;
-        ((struct queue*)id_of_queue)->queue_size++;
-       
-        // reallocate memory if num of elements in queue becomes larger than the max num of elements allocated for the queue 
-        if(((struct queue*)id_of_queue)->queue_back > ((struct queue*)id_of_queue)->queue_size_allocated)               // TODO: better implementation to prevent uncontrollable increase in empty queue space
+        // Allocate space in the queue for the array of values
+        struct data *aux_data_ptr = (struct data*) malloc(1*sizeof(struct data));   
+        if(NULL == aux_data_ptr)
         {
-                // tries to allocate double the size of the current queue;
-                void* queue_aux = realloc(((struct queue*)id_of_queue)->queue_data, (((struct queue*)id_of_queue)->queue_size_allocated + ((struct queue*)id_of_queue)->queue_size_allocated)*((struct queue*)id_of_queue)->datatype_size); 
-                if(NULL == queue_aux)
-                {
-                        fprintf(stderr, "Memory allocation failed\n");
-                }
-                ((struct queue*)id_of_queue)->queue_data = queue_aux;
-                ((struct queue*)id_of_queue)->queue_size_allocated <<= 1;
+                fprintf(stderr, "Memory allocation failed\n");
         }
 
-        memcpy(check_queue_back(id_of_queue), data_to_push, ((struct queue*)id_of_queue)->datatype_size);
+        aux_data_ptr->data_element = (void*) malloc(1*((struct queue*)id_of_queue)->datatype_size);
+        if(NULL == aux_data_ptr->data_element)
+        {
+                fprintf(stderr, "Memory allocation failed\n");
+        }
+        
+        memcpy(aux_data_ptr->data_element, data_to_push, ((struct queue*)id_of_queue)->datatype_size);
+        aux_data_ptr->next = NULL;
+
+        if(0 == ((struct queue*)id_of_queue)->queue_size)
+        {
+                ((struct queue*)id_of_queue)->queue_front = aux_data_ptr;
+                ((struct queue*)id_of_queue)->queue_back = aux_data_ptr;
+        }
+        else
+        {
+                ((struct queue*)id_of_queue)->queue_back->next = aux_data_ptr;
+                ((struct queue*)id_of_queue)->queue_back = ((struct queue*)id_of_queue)->queue_back->next;
+        }
+
+        ((struct queue*)id_of_queue)->queue_size++;
+
 
         return ;
 
@@ -466,9 +480,16 @@ void free_queue(void* id_of_queue)
         if(NULL == id_of_queue)
                 return;
 
-        if(NULL != ((struct queue*)id_of_queue)->queue_data)
-                free(((struct queue*)id_of_queue)->queue_data);
-        
+        struct data *aux_data_ptr = ((struct queue*)id_of_queue)->queue_front; 
+
+        while(NULL != (((struct queue*)id_of_queue)->queue_front))
+        {
+                ((struct queue*)id_of_queue)->queue_front = ((struct queue*)id_of_queue)->queue_front->next;
+                free(aux_data_ptr->data_element);
+                free(aux_data_ptr);
+                aux_data_ptr = ((struct queue*)id_of_queue)->queue_front;
+        }
+
         free(id_of_queue);
         return ;
 

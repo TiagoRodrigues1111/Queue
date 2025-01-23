@@ -13,7 +13,7 @@
 * ----------    --------------- ---------       -------         -----------------------------------     
 * 14-01-2025    Tiago Rodrigues                       1         File preparation     
 * 14-01-2025    Tiago Rodrigues                       1         Added prototype functions                                                                                                       
-*                                                                                                       
+* 23-01-2025    Tiago Rodrigues                       1         Further changed queue prototypes                                                                                                      
 *******************************************************************************************************/
 #ifndef QUEUE_H
 #define QUEUE_H
