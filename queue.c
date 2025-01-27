@@ -1,7 +1,7 @@
 /*******************************************************************************************************************
 * FILE NAME: queue.c
 *                                                                                                               
-* PURPOSE: 
+* PURPOSE: This file implements the functions defined in queue.h, with an array 
 *                                                                                                               
 * FILE REFERENCES:                                                                                              
 *                                                                                                               
@@ -20,21 +20,23 @@
 * EXTERNAL REFERENCES:                                                                                          
 * Name                          Description                                                                     
 * ----                          -----------                                                                     
-*   
-* 
-*    
+* malloc                        allocates memory space                                                          https://man7.org/linux/man-pages/man3/free.3.html
+* realloc                       reallocates memory space                                                        https://man7.org/linux/man-pages/man3/realloc.3p.html
+* memcpy                        copies x number of bytes from one memory position to another memory position    https://man7.org/linux/man-pages/man3/memcpy.3.html
+* fprintf                       writes formatted data to a stream                                               https://man7.org/linux/man-pages/man3/fprintf.3p.html
+*     
 * ABNORMAL TERMINATION CONDITIONS, ERROR AND WARNING MESSAGES:                                                  
 *             
 *                                                                                                  
 * ASSUMPTIONS, CONSTRAINTS, RESTRICTIONS:                                                                       
-*                                
-* 
-* 
-* 
-                                                                                                                
+*  It is assumed that the queue will never have more than 2^64 elements.                               
+*  It is assumed that the user will grab only 1 element size from the memory position returned from check_queue_front and check_queue_back 
+*
+*
+*
 * NOTES:                                                                                                        
-*                                 
-*                                       
+*
+*
 * REQUIREMENTS/FUNCTIONAL SPECIFICATIONS REFERENCES:                                                            
 *
 *                                                                                                               
@@ -44,7 +46,7 @@
 * ----------    ---------------         ---------       -------         ---------------------   
 * 14-01-2025    Tiago Rodrigues                               1         File preparation   
 * 23-01-2025    Tiago Rodrigues                               1         Initial queue implementation     
-* 
+* 27-01-2025    Tiago Rodrigues                               1         Added comments to functions
 *                                                                                                               
 * ALGORITHM (PDL)
 *    
@@ -127,25 +129,29 @@ struct queue
 
 /******************************************************************
 *
-* FUNCTION NAME:       
+* FUNCTION NAME: create_queue       
 *
-*
+* PURPOSE: Allocates the needed memory for the queue wanted
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-----------	---	--------------------------
-* 
+* id_of_queue	        void**	        I/O	pointer to the memory position of the queue to implement
+* size_of_datatype      uint64_t        I       byte size of datatype to place in the queue
+* elements_to_allocate  uint64_t        I       number of elements to allocate for the queue
 *
-*
-* RETURNS:   
+* RETURNS: void
 *
 *
 *
 *****************************************************************/
 void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elements_to_allocate)
 {
-
+        /* LOCAL VARIABLES:
+        *  Variable        Type    Description
+        *  --------        ----    -----------
+        *  None
+        */
         if(NULL == id_of_queue)
         {
                 fprintf(stderr, "Queue pointer location is null\n");
@@ -184,18 +190,17 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
 
 /******************************************************************
 *
-* FUNCTION NAME:       
+* FUNCTION NAME: check_queue_front
 *
-*
+* PURPOSE: Returns the memory position of the element that is currently on the front of the queue
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-----------	---	--------------------------
+* id_of_queue   void*	        I	pointer to the memory position of the queue to check
 * 
 *
-*
-* RETURNS:   
+* RETURNS: void* (pointer to the memory position of the element at the front of the queue)
 *
 *
 *
@@ -225,17 +230,17 @@ void* check_queue_front(void* id_of_queue)
 
 /******************************************************************
 *
-* FUNCTION NAME:        
+* FUNCTION NAME: check_queue_back    
 *
-*
+* PURPOSE: Returns the memory position of the element that is currently on the back of the queue
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-------------	---	--------------------------
+* id_of_queue   void*	        I	pointer to the memory position of the queue to check
 * 
 *
-* RETURNS:
+* RETURNS: void* (pointer to the memory position of the element at the back of the queue)
 *
 *
 *
@@ -269,18 +274,17 @@ void* check_queue_back(void* id_of_queue)
 
 /******************************************************************
 *
-* FUNCTION NAME:       
+* FUNCTION NAME: queue_pop
 *
-*
+* PURPOSE: Removes one position from the front of the queue
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-----------	---	--------------------------
-* 
+* id_of_queue   void*	        I	pointer to the memory position of the queue to pop from
 *
 *
-* RETURNS:   
+* RETURNS: void
 *
 *
 *
@@ -310,17 +314,18 @@ void queue_pop(void* id_of_queue)
 
 /******************************************************************
 *
-* FUNCTION NAME:        
+* FUNCTION NAME: queue_push
 *
-*
+* PURPOSE: Pushes an element to the back of the queue
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-------------	---	--------------------------
-* 
+* id_of_queue   void*	        I	pointer to the memory position of the queue to which the element is being push to
+* data_to_push  void*	        I	pointer to the memory position of the data to push into the queue
 *
-* RETURNS:
+*
+* RETURNS: void
 *
 *
 *
@@ -365,17 +370,17 @@ void queue_push(void* id_of_queue, void* data_to_push)
 
 /******************************************************************
 *
-* FUNCTION NAME:        
+* FUNCTION NAME: check_queue_is_empty
 *
-*
+* PURPOSE: Checks if the queue is empty or not
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-------------	---	--------------------------
-* 
+* id_of_queue   void*	        I	pointer to the memory position of the queue to check
 *
-* RETURNS:
+*
+* RETURNS: uint8_t
 *
 *
 *
@@ -404,17 +409,17 @@ uint8_t check_queue_is_empty(void* id_of_queue)
 
 /******************************************************************
 *
-* FUNCTION NAME:        
+* FUNCTION NAME: check_queue_size
 *
-*
+* PURPOSE: Will return the current element count in the queue
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-------------	---	--------------------------
-* 
+* id_of_queue   void*	        I	pointer to the memory position of the queue to check
 *
-* RETURNS:
+*
+* RETURNS: uint64_t (size of the queue)
 *
 *
 *
@@ -440,17 +445,17 @@ uint64_t check_queue_size(void* id_of_queue)
 
 /******************************************************************
 *
-* FUNCTION NAME:        
+* FUNCTION NAME: free_queue
 *
-*
+* PURPOSE: Frees the memory allocated for the queue
 *
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
-* --------	-------------	---	--------------------------
-* 
+* id_of_queue   void*	        I	pointer to the memory position of the queue to free
 *
-* RETURNS:
+*
+* RETURNS: void
 *
 *
 *
