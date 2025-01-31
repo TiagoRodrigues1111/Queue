@@ -170,7 +170,8 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
         (*id_of_queue) = malloc(1*sizeof(struct queue));                       
         if(NULL == *id_of_queue)
         {
-                fprintf(stderr, "Memory allocation failed\n");
+                perror("Memory allocation failed");
+                return ;
         }
 
         ((struct queue*)(*id_of_queue))->queue_front = NULL;
@@ -216,8 +217,8 @@ void* check_queue_front(void* id_of_queue)
         }
                
 
-        // if(check_queue_is_empty(id_of_queue))                       
-        //        return NULL;
+        if(check_queue_is_empty(id_of_queue))                       
+                return NULL;
 
         if(NULL != ((struct queue*)id_of_queue)->queue_front)
                 return ((struct queue*)id_of_queue)->queue_front->data_element;
@@ -350,19 +351,25 @@ void queue_push(void* id_of_queue, void* data_to_push)
                 fprintf(stderr, "Queue pointer location is null\n");
                 return ;
         }
-
+        if(UINT64_MAX == check_queue_size(id_of_queue))
+        {
+                fprintf(stderr, "Queue full, can't add more elements\n");
+                return ;
+        }
         
         // Allocate space in the queue for the array of values
         struct data *aux_data_ptr = (struct data*) malloc(1*sizeof(struct data));   
         if(NULL == aux_data_ptr)
         {
-                fprintf(stderr, "Memory allocation failed\n");
+                perror("Memory allocation failed");
+                return ;
         }
 
         aux_data_ptr->data_element = (void*) malloc(1*((struct queue*)id_of_queue)->datatype_size);
         if(NULL == aux_data_ptr->data_element)
         {
-                fprintf(stderr, "Memory allocation failed\n");
+                perror("Memory allocation failed");
+                return ;
         }
         
         memcpy(aux_data_ptr->data_element, data_to_push, ((struct queue*)id_of_queue)->datatype_size);
