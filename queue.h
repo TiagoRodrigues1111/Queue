@@ -73,7 +73,8 @@ extern "C" {
 *
 * ARGUMENTS:
 *
-* ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* ARGUMENT 	        TYPE	        I/O	DESCRIPTION
+* --------              ----            ---     ------------
 * id_of_queue	        void**	        I/O	pointer to the memory position of the queue to implement
 * size_of_datatype      uint64_t        I       byte size of datatype to place in the queue
 * elements_to_allocate  uint64_t        I       number of elements to allocate for the queue
@@ -86,7 +87,6 @@ extern "C" {
 void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elements_to_allocate);
 
 
-
 /******************************************************************
 *
 * FUNCTION NAME: check_queue_front
@@ -96,6 +96,7 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to check
 * 
 *
@@ -118,6 +119,7 @@ void* check_queue_front(void* id_of_queue);
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to check
 * 
 *
@@ -138,6 +140,7 @@ void* check_queue_back(void* id_of_queue);
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to pop from
 *
 *
@@ -158,6 +161,7 @@ void queue_pop(void* id_of_queue);
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to which the element is being push to
 * data_to_push  void*	        I	pointer to the memory position of the data to push into the queue
 *
@@ -179,6 +183,7 @@ void queue_push(void* id_of_queue, void* data_to_push);
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to check
 *
 *
@@ -200,6 +205,7 @@ uint8_t check_queue_is_empty(void* id_of_queue);
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to check
 *
 *
@@ -221,6 +227,7 @@ uint64_t check_queue_size(void* id_of_queue);
 * ARGUMENTS:
 *
 * ARGUMENT 	TYPE	        I/O	DESCRIPTION
+* --------      ----            ---     ------------
 * id_of_queue   void*	        I	pointer to the memory position of the queue to free
 *
 *
