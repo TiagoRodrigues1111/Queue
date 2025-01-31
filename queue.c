@@ -107,6 +107,7 @@ struct queue
         uint64_t queue_size;
         uint64_t queue_size_allocated;                  // num_of_elements
         uint64_t datatype_size;                         // num_of_bytes
+        uint64_t k_aux;                                 // auxiliary 4 bytes for reallocation      
         void *queue_data;
 };
 
@@ -163,7 +164,8 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
         (*id_of_queue) = malloc(1*sizeof(struct queue));                       
         if(NULL == *id_of_queue)
         {
-                fprintf(stderr, "Memory allocation failed\n");
+                perror("Memory allocation failed");
+                return ;
         }
 
         if(0 == elements_to_allocate)
@@ -180,7 +182,8 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
         ((struct queue*)(*id_of_queue))->queue_data = (void*) malloc(((struct queue*)(*id_of_queue))->queue_size_allocated*((struct queue*)(*id_of_queue))->datatype_size);     
         if(NULL == ((struct queue*)(*id_of_queue))->queue_data)
         {
-                fprintf(stderr, "Memory allocation failed\n");
+                perror("Memory allocation failed");
+                return ;
         }
         
         return ;        
@@ -350,14 +353,38 @@ void queue_push(void* id_of_queue, void* data_to_push)
         // reallocate memory if num of elements in queue becomes larger than the max num of elements allocated for the queue 
         if(((struct queue*)id_of_queue)->queue_back > ((struct queue*)id_of_queue)->queue_size_allocated)               // TODO: better implementation to prevent uncontrollable increase in empty queue space
         {
-                // tries to allocate double the size of the current queue;
-                void* queue_aux = realloc(((struct queue*)id_of_queue)->queue_data, (((struct queue*)id_of_queue)->queue_size_allocated + ((struct queue*)id_of_queue)->queue_size_allocated)*((struct queue*)id_of_queue)->datatype_size); 
-                if(NULL == queue_aux)
+
+                void* queue_aux = NULL;
+                if(1 == (((struct queue*)id_of_queue)->k_aux))
                 {
-                        fprintf(stderr, "Memory allocation failed\n");
+                        queue_aux = realloc(((struct queue*)id_of_queue)->queue_data, (((struct queue*)id_of_queue)->queue_size_allocated + ((struct queue*)id_of_queue)->queue_size_allocated)*((struct queue*)id_of_queue)->datatype_size);
+                        if(NULL != queue_aux)                   // this is not needed, and could be placed after the while, however the shift left is a bit faster than the addition
+                        {
+                                ((struct queue*)id_of_queue)->queue_size_allocated <<= 1;
+                        }
                 }
+                else
+                {
+                        while (NULL == queue_aux)
+                        {
+                                perror("Memory reallocation failed");
+                                printf("Attempting smaller reallocation\n");
+                                (((struct queue*)id_of_queue)->k_aux)<<=1;                              // always times 2 (TODO: might be faster to shift at the end again, and add 1 (check the lim->))
+                                 
+                                if(0 == (((struct queue*)id_of_queue)->queue_size_allocated/(((struct queue*)id_of_queue)->k_aux)))
+                                {
+                                        fprintf(stderr, "Impossible to reallocate queue\n");
+                                        //perror("Impossible to reallocate queue");
+                                        return ;
+                                }
+                                queue_aux = realloc(((struct queue*)id_of_queue)->queue_data, (((struct queue*)id_of_queue)->queue_size_allocated + (((struct queue*)id_of_queue)->queue_size_allocated / (((struct queue*)id_of_queue)->k_aux)))*((struct queue*)id_of_queue)->datatype_size);
+                        }
+                        
+                        ((struct queue*)id_of_queue)->queue_size_allocated += (((struct queue*)id_of_queue)->queue_size_allocated/(((struct queue*)id_of_queue)->k_aux));          
+                }
+                
                 ((struct queue*)id_of_queue)->queue_data = queue_aux;
-                ((struct queue*)id_of_queue)->queue_size_allocated <<= 1;
+
         }
 
         memcpy(check_queue_back(id_of_queue), data_to_push, ((struct queue*)id_of_queue)->datatype_size);
