@@ -116,7 +116,7 @@ To compile and run the program, you need:
   ```
 
 ### `Front`
-- **Description**: Returns the frint element of the queue without removing it.
+- **Description**: Returns the front element of the queue without removing it.
 - **Output**: The starting memory position of the element.
 - **Example**:
   ```c
