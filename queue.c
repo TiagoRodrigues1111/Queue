@@ -308,7 +308,8 @@ void queue_pop(void* id_of_queue)
         if(!check_queue_is_empty(id_of_queue))
         {
                 ((struct queue*)id_of_queue)->queue_size--;
-                ((struct queue*)id_of_queue)->queue_front++;                            // TODO: if front is at end of array, front is decremented instead
+                if(!check_queue_is_empty(id_of_queue))
+                        ((struct queue*)id_of_queue)->queue_front++;                            // TODO: if front is at end of array, front is decremented instead
         }
         return;
 
@@ -349,6 +350,7 @@ void queue_push(void* id_of_queue, void* data_to_push)
         
         if(!check_queue_is_empty(id_of_queue))                                  //caution (left == right will not work, because they are the same for 1 element)
                  ((struct queue*)id_of_queue)->queue_back++;
+        
         ((struct queue*)id_of_queue)->queue_size++;
        
         // reallocate memory if num of elements in queue becomes larger than the max num of elements allocated for the queue (has to be >= because queue_back is zero for first element)
