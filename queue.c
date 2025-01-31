@@ -177,6 +177,7 @@ void create_queue(void** id_of_queue, uint64_t size_of_datatype, uint64_t elemen
         ((struct queue*)(*id_of_queue))->queue_back = 0;
         ((struct queue*)(*id_of_queue))->queue_size = 0;
         ((struct queue*)(*id_of_queue))->datatype_size = size_of_datatype;
+        ((struct queue*)(*id_of_queue))->k_aux = 1;
         
         // Allocate space in the queue for the array of values
         ((struct queue*)(*id_of_queue))->queue_data = (void*) malloc(((struct queue*)(*id_of_queue))->queue_size_allocated*((struct queue*)(*id_of_queue))->datatype_size);     
@@ -350,8 +351,8 @@ void queue_push(void* id_of_queue, void* data_to_push)
                  ((struct queue*)id_of_queue)->queue_back++;
         ((struct queue*)id_of_queue)->queue_size++;
        
-        // reallocate memory if num of elements in queue becomes larger than the max num of elements allocated for the queue 
-        if(((struct queue*)id_of_queue)->queue_back > ((struct queue*)id_of_queue)->queue_size_allocated)               // TODO: better implementation to prevent uncontrollable increase in empty queue space
+        // reallocate memory if num of elements in queue becomes larger than the max num of elements allocated for the queue (has to be >= because queue_back is zero for first element)
+        if(((struct queue*)id_of_queue)->queue_back >= ((struct queue*)id_of_queue)->queue_size_allocated)               // TODO: better implementation to prevent uncontrollable increase in empty queue space
         {
 
                 void* queue_aux = NULL;
@@ -379,7 +380,7 @@ void queue_push(void* id_of_queue, void* data_to_push)
                                 }
                                 queue_aux = realloc(((struct queue*)id_of_queue)->queue_data, (((struct queue*)id_of_queue)->queue_size_allocated + (((struct queue*)id_of_queue)->queue_size_allocated / (((struct queue*)id_of_queue)->k_aux)))*((struct queue*)id_of_queue)->datatype_size);
                         }
-                        
+
                         ((struct queue*)id_of_queue)->queue_size_allocated += (((struct queue*)id_of_queue)->queue_size_allocated/(((struct queue*)id_of_queue)->k_aux));          
                 }
                 
