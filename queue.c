@@ -347,7 +347,13 @@ void queue_push(void* id_of_queue, void* data_to_push)
                 fprintf(stderr, "Queue pointer location is null\n");
                 return ;
         }
-        
+        if(UINT64_MAX == ((struct queue*)id_of_queue)->queue_back)
+        {
+                fprintf(stderr, "Queue full, can't add more elements\n");
+                return ;
+        }
+
+
         if(!check_queue_is_empty(id_of_queue))                                  //caution (left == right will not work, because they are the same for 1 element)
                  ((struct queue*)id_of_queue)->queue_back++;
         
