@@ -215,7 +215,7 @@ void* check_queue_front(void* id_of_queue)
                 fprintf(stderr, "Queue pointer location is null\n");
                 return NULL;
         }
-               
+
 
         if(check_queue_is_empty(id_of_queue))                       
                 return NULL;
@@ -223,7 +223,7 @@ void* check_queue_front(void* id_of_queue)
         if(NULL != ((struct queue*)id_of_queue)->queue_front)
                 return ((struct queue*)id_of_queue)->queue_front->data_element;
   
-
+        return NULL;
 }
 
 /******************************************************************
@@ -255,14 +255,13 @@ void* check_queue_back(void* id_of_queue)
                 fprintf(stderr, "Queue pointer location is null\n");
                 return NULL;
         }
-               
+
 
         if(NULL != ((struct queue*)id_of_queue)->queue_back)
                 return ((struct queue*)id_of_queue)->queue_back->data_element;
 
 
-
-
+        return NULL;
 }
 
 
