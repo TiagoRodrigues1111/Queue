@@ -47,6 +47,7 @@
 * 14-01-2025    Tiago Rodrigues                               1         File preparation   
 * 23-01-2025    Tiago Rodrigues                               1         Initial queue implementation     
 * 27-01-2025    Tiago Rodrigues                               1         Added comments to functions
+* 03-02-2025    Tiago Rodrigues                               1         Added fix to data being NULL bug
 *                                                                                                               
 * ALGORITHM (PDL)
 *    
@@ -350,6 +351,11 @@ void queue_push(void* id_of_queue, void* data_to_push)
         if(UINT64_MAX == ((struct queue*)id_of_queue)->queue_back)
         {
                 fprintf(stderr, "Queue full, can't add more elements\n");
+                return ;
+        }
+        if(NULL == data_to_push)
+        {
+                fprintf(stderr, "Data pointer is null\n");
                 return ;
         }
 
