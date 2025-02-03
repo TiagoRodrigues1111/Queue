@@ -1,4 +1,5 @@
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/TiagoRodrigues1111/queue?color=orange)](https://github.com/TiagoRodrigues1111/queue/releases)
 [![Unlicense License](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
 
  
