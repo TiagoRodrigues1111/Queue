@@ -48,7 +48,8 @@
 * 14-01-2025    Tiago Rodrigues                               1         File preparation     
 * 23-01-2025    Tiago Rodrigues                               1         Implementation of queue using a linked list     
 * 27-01-2025    Tiago Rodrigues                               1         Added Comments to functions  
-*                                                                                                             
+* 03-02-2025    Tiago Rodrigues                               1         Added fix to data being NULL bug
+*                                                                                                           
 * ALGORITHM (PDL)
 *    
 *
@@ -355,7 +356,12 @@ void queue_push(void* id_of_queue, void* data_to_push)
                 fprintf(stderr, "Queue full, can't add more elements\n");
                 return ;
         }
-        
+        if(NULL == data_to_push)
+        {
+                fprintf(stderr, "Data pointer is null\n");
+                return ;
+        }
+       
         // Allocate space in the queue for the array of values
         struct data *aux_data_ptr = (struct data*) malloc(1*sizeof(struct data));   
         if(NULL == aux_data_ptr)
