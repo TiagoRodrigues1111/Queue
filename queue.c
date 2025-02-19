@@ -67,11 +67,24 @@
 /* 1 includes */
 /*****************************************************/
 
+/* 1.1 Related header */
 #include "queue.h"
 
+/* 1.2 C system headers */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+/* 1.3 C++ standard library headers*/
+
+/* 1.4 other libraries' headers*/
+
+/* 1.5 project's headers */
+
+
+
+
+
 
 /*****************************************************/
 
